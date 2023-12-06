@@ -10,24 +10,24 @@ import pickle
 import torch
 from torch import nn
 
-from lcpfn import utils
-from lcpfn.transformer import TransformerModel
-from lcpfn.bar_distribution import (
+from lcpfn.lcpfn import utils
+from lcpfn.lcpfn.transformer import TransformerModel
+from lcpfn.lcpfn.bar_distribution import (
     BarDistribution,
     FullSupportBarDistribution,
     get_bucket_limits,
 )
-from lcpfn.utils import (
+from lcpfn.lcpfn.utils import (
     get_cosine_schedule_with_warmup,
     get_openai_lr,
     StoreDictKeyPair,
     get_weighted_single_eval_pos_sampler,
     get_uniform_single_eval_pos_sampler,
 )
-from lcpfn import priors
-from lcpfn import encoders
-from lcpfn import positional_encodings
-from lcpfn.utils import init_dist
+from lcpfn.lcpfn import priors
+from lcpfn.lcpfn import encoders
+from lcpfn.lcpfn import positional_encodings
+from lcpfn.lcpfn.utils import init_dist
 from torch.cuda.amp import autocast, GradScaler
 
 

@@ -2,8 +2,8 @@ import math
 
 from torch import nn
 
-from lcpfn import bar_distribution, encoders, priors, train
-from lcpfn import utils
+from lcpfn.lcpfn import bar_distribution, encoders, priors, train
+from lcpfn.lcpfn import utils
 
 
 def train_lcpfn(
@@ -14,7 +14,7 @@ def train_lcpfn(
     num_borders: int = 1000,
     lr: float = 0.001,
     batch_size: int = 100,
-    epochs: int = 1000,
+    epochs: int = 100,
 ):
     """
     Train a LCPFN model using the specified hyperparameters.
@@ -41,7 +41,7 @@ def train_lcpfn(
     num_features = 1
 
     ys = get_batch_func(
-        10_000,
+        3000,
         seq_len,
         num_features,
         hyperparameters=hps,
@@ -56,6 +56,8 @@ def train_lcpfn(
             num_borders: bar_distribution.FullSupportBarDistribution(bucket_limits)
         }
     }
+
+    print("checking")
 
     config = dict(
         nlayers=nlayers,

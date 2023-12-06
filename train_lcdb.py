@@ -1,0 +1,115 @@
+import pandas as pd
+
+import lcpfn.lcpfn as lcpfn
+import numpy as np
+from matplotlib import pyplot as plt
+import lcdb
+import torch
+from scipy.interpolate import interp1d
+
+df = pd.read_pickle('LCDB_localised/train_curves.pkl')
+def get_validation_curve(rng:np.random, verbose=False):
+    """Retrieve the validation curve for a given model and dataset."""
+    #slect a random row from the dataframe
+    row = rng.choice(df.index)
+    if verbose:
+        print(f"openmlid: {df.loc[row, 'openmlid']}, learner: {df.loc[row, 'learner']}")
+    anchors = df.loc[row, 'anchors']
+    means = df.loc[row, 'means']
+    std = df.loc[row, 'std']
+    return anchors, means, std
+# Create a function that generates a batch of samples from the LCBD dataset
+def sample_from_lcbd(n:np.random, plot=False, seq_len=100):
+    return sample(n, components=None, distribution=None, plot=plot)
+
+def sample(rng:np.random,
+            components,
+            distribution,
+            var_lnloc=-4,
+            var_lnscale=1,
+            range_constraint=True,
+            seq_len=100,
+            plot=False):
+    anchors, means, std = get_validation_curve(rng=rng)
+
+    means = np.array(means)
+    #change the anchors to be between 0 and 1
+    anchors = np.array(anchors)
+    anchors = (anchors - np.min(anchors)) / (np.max(anchors) - np.min(anchors))
+    try:
+        f = interp1d(anchors, means, kind='cubic')
+    except Exception as e:
+        get_validation_curve(rng, verbose=True)
+        print(e)
+        f = interp1d(anchors, means)
+
+    x_smooth = np.linspace(min(anchors), max(anchors), seq_len)
+    y_smooth = f(x_smooth)
+
+    y_noise = rng.normal(0, std, seq_len)
+    y_noise = y_smooth + y_noise
+    y_noise = np.clip(y_noise, 0, 1)
+
+    if plot:
+        plt.scatter(anchors*100, means, label='Original Points')
+        plt.plot(y_smooth, "*" ,label='Interpolated Curve', color='red', alpha=0.1)
+        plt.plot(y_noise,  "*", label='Interpolated noise Curve', color='blue', alpha=0.1)
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.legend()
+        plt.ylim(0, 1)
+        plt.show()
+
+        print("anchors", anchors.shape)
+        print("means", means.shape)
+        print("y_noise", y_noise.shape)
+        print("y_smooth", y_smooth.shape)
+        print("types:", type(y_smooth))
+        print("types:", type(y_noise))
+
+
+    def curve():
+        return y_smooth, y_noise
+    return curve
+
+
+get_batch_func = lcpfn.create_get_batch_func(prior=sample_from_lcbd)
+
+result = lcpfn.train_lcpfn(get_batch_func=get_batch_func,
+                         num_borders=100)
+
+model = result[2]
+print(type(result))
+torch.save(model, "model_lcdb.pt")
+print(model)
+
+
+try:
+    result = lcpfn.train_lcpfn(get_batch_func=get_batch_func,
+                                 num_borders=300)
+
+    model = result[2]
+    print(type(result))
+    torch.save(model, "model_lcdb_300_num_bord.pt")
+    print(model)
+except Exception as e:
+    print(e)
+    print("failed to train with 300 num borders")
+
+try:
+    result = lcpfn.train_lcpfn(get_batch_func=get_batch_func,
+                                seq_len=100,
+                                 emsize=256,
+                                 nlayers=3,
+                                 num_borders=1000,
+                                 lr=0.001,
+                                 batch_size=10,
+                                 epochs=3)
+
+    model = result[2]
+    print(type(result))
+    torch.save(model, "model_lcdb_1000_num_bord.pt")
+    print(model)
+except Exception as e:
+    print(e)
+    print("failed to train with 1000 num borders")

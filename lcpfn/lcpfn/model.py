@@ -1,5 +1,5 @@
 import torch
-import lcpfn
+import lcpfn.lcpfn as lcpfn
 
 class LCPFN(torch.nn.Module):
     def __init__(self, model_name="EMSIZE512_NLAYERS12_NBUCKETS1000"):

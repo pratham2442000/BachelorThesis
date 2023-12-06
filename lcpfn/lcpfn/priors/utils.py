@@ -3,7 +3,7 @@ import random
 import pandas as pd
 import torch
 
-from lcpfn.utils import set_locals_in_self
+from lcpfn.lcpfn.utils import set_locals_in_self
 from itertools import repeat
 from .prior import PriorDataLoader
 from torch import nn

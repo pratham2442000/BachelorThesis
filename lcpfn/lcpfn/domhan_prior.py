@@ -1,7 +1,7 @@
 from functools import partial
 import torch
 import numpy as np
-from lcpfn.curves import (
+from lcpfn.lcpfn.curves import (
     pow3,
     ilog2,
     janoschek,
@@ -16,7 +16,7 @@ from lcpfn.curves import (
     pow4,
     dr_hill_zero_background,
 )
-from lcpfn.curves import (
+from lcpfn.lcpfn.curves import (
     prior_pow3,
     prior_janoschek,
     prior_log_power,
@@ -28,7 +28,7 @@ from lcpfn.curves import (
     prior_pow4,
     prior_dr_hill_zero_background,
 )
-from lcpfn.curves import (
+from lcpfn.lcpfn.curves import (
     uniform_prior_pow3,
     uniform_prior_ilog2,
     uniform_prior_janoschek,
@@ -160,7 +160,7 @@ def get_batch_domhan(
     num_features,
     prior,
     device="cpu",
-    noisy_target=True,
+    noisy_target=False,
     **_,
 ):
     assert num_features == 1

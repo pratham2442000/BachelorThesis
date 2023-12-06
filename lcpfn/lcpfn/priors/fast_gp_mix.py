@@ -18,7 +18,7 @@ from gpytorch.constraints import GreaterThan
 
 
 from bar_distribution import BarDistribution
-from utils import default_device
+from LCDB_localised import default_device
 from .utils import get_batch_to_dataloader
 from . import fast_gp
 

@@ -21,5 +21,5 @@ class PriorDataLoader(DataLoader, metaclass=ABCMeta):
     # We follow sequence len (s) first, batch size (b) second. So x: (s,b,num_features), y,target_y: (s,b)
     # and style: Optional[(b,num_style_params)], style can be omitted or set to None, if it is not intended to be used.
 
-    # For more references, see `priors/utils.py` for a pretty general implementation of a DataLoader
+    # For more references, see `priors/LCDB_localised.py` for a pretty general implementation of a DataLoader
     # and `train.py` for the only call of it.

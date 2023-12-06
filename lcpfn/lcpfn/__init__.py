@@ -48,6 +48,6 @@ def __getattr__(name):
         return model_dict[name]
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
-from lcpfn.model import LCPFN
-from lcpfn.train_lcpfn import train_lcpfn
-from lcpfn.domhan_prior import sample_from_prior, create_get_batch_func
+from lcpfn.lcpfn.model import LCPFN
+from lcpfn.lcpfn.train_lcpfn import train_lcpfn
+from lcpfn.lcpfn.domhan_prior import sample_from_prior, create_get_batch_func

@@ -3,7 +3,7 @@ import random
 import torch
 from torch import nn
 
-from utils import default_device
+from LCDB_localised import default_device
 from .utils import get_batch_to_dataloader
 
 

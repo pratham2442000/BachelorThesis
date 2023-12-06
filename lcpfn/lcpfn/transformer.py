@@ -6,8 +6,8 @@ import torch.nn as nn
 from torch import Tensor
 from torch.nn import Module, TransformerEncoder
 
-from lcpfn.layer import TransformerEncoderLayer, _get_activation_fn
-from lcpfn.utils import SeqBN, bool_mask_to_att_mask
+from lcpfn.lcpfn.layer import TransformerEncoderLayer, _get_activation_fn
+from lcpfn.lcpfn.utils import SeqBN, bool_mask_to_att_mask
 
 
 
