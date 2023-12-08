@@ -7,20 +7,24 @@ import lcdb
 import torch
 from scipy.interpolate import interp1d
 
-df = pd.read_pickle('LCDB_localised/train_curves.pkl')
-def get_validation_curve(rng:np.random, verbose=False):
+df_train = pd.read_pickle('/mnt/c/Users/prath/PycharmProjects/rp/LCDB_localised/train_curves.pkl')
+def get_validation_curve(rng:np.random):
     """Retrieve the validation curve for a given model and dataset."""
     #slect a random row from the dataframe
-    row = rng.choice(df.index)
-    if verbose:
-        print(f"openmlid: {df.loc[row, 'openmlid']}, learner: {df.loc[row, 'learner']}")
-    anchors = df.loc[row, 'anchors']
-    means = df.loc[row, 'means']
-    std = df.loc[row, 'std']
-    return anchors, means, std
+    row = rng.choice(len(df_train)-1)
+    row = df_train.iloc[row]
+    #get the openml id
+    openlid = row['openmlid']
+    learner = row['learner']
+    anchors = row['anchors']
+    means = row['means']
+    std = row['std']
+    return anchors, means, std, openlid, learner
+
 # Create a function that generates a batch of samples from the LCBD dataset
 def sample_from_lcbd(n:np.random, plot=False, seq_len=100):
     return sample(n, components=None, distribution=None, plot=plot)
+
 
 def sample(rng:np.random,
             components,
@@ -30,7 +34,8 @@ def sample(rng:np.random,
             range_constraint=True,
             seq_len=100,
             plot=False):
-    anchors, means, std = get_validation_curve(rng=rng)
+
+    anchors, means, std, openmlid, learner = get_validation_curve(rng=rng)
 
     means = np.array(means)
     #change the anchors to be between 0 and 1
@@ -39,16 +44,19 @@ def sample(rng:np.random,
     try:
         f = interp1d(anchors, means, kind='cubic')
     except Exception as e:
-        get_validation_curve(rng, verbose=True)
+        print(f"openmlid: {openmlid}, learner: {learner}")
         print(e)
         f = interp1d(anchors, means)
 
     x_smooth = np.linspace(min(anchors), max(anchors), seq_len)
     y_smooth = f(x_smooth)
+    y_smooth = np.clip(y_smooth, 0, 1)
+    y_smooth = y_smooth-0.000000001
 
     y_noise = rng.normal(0, std, seq_len)
     y_noise = y_smooth + y_noise
     y_noise = np.clip(y_noise, 0, 1)
+    y_noise = y_noise-0.000000001
 
     if plot:
         plt.scatter(anchors*100, means, label='Original Points')
@@ -80,36 +88,7 @@ result = lcpfn.train_lcpfn(get_batch_func=get_batch_func,
 
 model = result[2]
 print(type(result))
-torch.save(model, "model_lcdb.pt")
+torch.save(model, "/mnt/c/Users/prath/PycharmProjects/rp/model_lcdb.pt")
 print(model)
 
 
-try:
-    result = lcpfn.train_lcpfn(get_batch_func=get_batch_func,
-                                 num_borders=300)
-
-    model = result[2]
-    print(type(result))
-    torch.save(model, "model_lcdb_300_num_bord.pt")
-    print(model)
-except Exception as e:
-    print(e)
-    print("failed to train with 300 num borders")
-
-try:
-    result = lcpfn.train_lcpfn(get_batch_func=get_batch_func,
-                                seq_len=100,
-                                 emsize=256,
-                                 nlayers=3,
-                                 num_borders=1000,
-                                 lr=0.001,
-                                 batch_size=10,
-                                 epochs=3)
-
-    model = result[2]
-    print(type(result))
-    torch.save(model, "model_lcdb_1000_num_bord.pt")
-    print(model)
-except Exception as e:
-    print(e)
-    print("failed to train with 1000 num borders")

@@ -16,14 +16,6 @@ class BarDistribution(nn.Module):
         full_width = self.bucket_widths.sum()
         border_order = torch.argsort(borders)
         assert (full_width - (self.borders[-1] - self.borders[0])).abs() < 1e-4, f'diff: {full_width - (self.borders[-1] - self.borders[0])}'
-
-        print(f'BarDistribution with {len(borders)-1} bars, border_order: {border_order}')
-        a = torch.arange(len(borders)).to(border_order.device)
-        for i in range(len(borders)):
-            print(i==border_order[i]==a[i])
-            # print(f'{i}, {border_order[i]}, {a[i]} ')
-
-
         assert (border_order == torch.arange(len(borders)).to(border_order.device)).all(), "Please provide sorted borders!"
         self.num_bars = len(borders) - 1
 

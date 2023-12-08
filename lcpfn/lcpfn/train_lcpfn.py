@@ -41,7 +41,7 @@ def train_lcpfn(
     num_features = 1
 
     ys = get_batch_func(
-        3000,
+        10000,
         seq_len,
         num_features,
         hyperparameters=hps,
