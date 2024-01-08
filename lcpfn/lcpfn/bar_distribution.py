@@ -154,6 +154,8 @@ class FullSupportBarDistribution(BarDistribution):
         #print(bucket_log_probs, logits.shape)
         log_probs = scaled_bucket_log_probs.gather(-1,target_sample.unsqueeze(-1)).squeeze(-1)
 
+        # print(self.bucket_widths)
+
         side_normals = (self.halfnormal_with_p_weight_before(self.bucket_widths[0]), self.halfnormal_with_p_weight_before(self.bucket_widths[-1]))
 
 
@@ -188,6 +190,8 @@ def get_bucket_limits_(num_outputs:int, full_range:tuple=None, ys:torch.Tensor=N
         if len(ys) % num_outputs: ys = ys[:-(len(ys) % num_outputs)]
         print(f'Using {len(ys)} y evals to estimate {num_outputs} buckets. Cut off the last {len(ys) % num_outputs} ys.')
         ys_per_bucket = len(ys) // num_outputs
+
+        # print(len(ys), num_outputs)
         if full_range is None:
             full_range = (ys.min(), ys.max())
         else:

@@ -304,6 +304,12 @@ def train(
                 step_time,
             ) = train_epoch()
             list_losses.append(total_loss.item())
+
+            with open('/mnt/c/Users/prath/PycharmProjects/rp/loss_list.csv', 'a') as f:
+                print("wrinting loss in file")
+                f.write(str(total_loss.item()) + ',\n')
+                print("loss written in file")
+
             if hasattr(dl, "validate") and epoch % validation_period == 0:
                 with torch.no_grad():
                     val_score = dl.validate(model)
