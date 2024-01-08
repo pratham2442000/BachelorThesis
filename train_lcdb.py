@@ -35,6 +35,7 @@ def sample(rng:np.random,
             seq_len=100,
             plot=False):
 
+    global df_train
     anchors, means, std, openmlid, learner = get_validation_curve(rng=rng)
 
     means = np.array(means)
@@ -46,7 +47,12 @@ def sample(rng:np.random,
     except Exception as e:
         print(f"openmlid: {openmlid}, learner: {learner}")
         print(e)
+        i = df_train[((df_train.openmlid == openmlid) & (df_train.learner == learner))].index
+        print(i)
+        df_train = df_train.drop(i)
+        print( df_train[((df_train.openmlid == openmlid) & (df_train.learner == learner))].index)
         f = interp1d(anchors, means)
+
 
     x_smooth = np.linspace(min(anchors), max(anchors), seq_len)
     y_smooth = f(x_smooth)
@@ -72,7 +78,7 @@ def sample(rng:np.random,
         print("means", means.shape)
         print("y_noise", y_noise.shape)
         print("y_smooth", y_smooth.shape)
-        print("types:", type(y_smooth))
+        print("types:", type(y_smooth)) 
         print("types:", type(y_noise))
 
 
@@ -83,12 +89,30 @@ def sample(rng:np.random,
 
 get_batch_func = lcpfn.create_get_batch_func(prior=sample_from_lcbd)
 
+for _ in range(1000):
+    prior = sample_from_lcbd(np.random)
+    curve, a = prior()
+    # plt.plot(curve, alpha=0.1)
+# plt.show()
+#
+f = open('/mnt/c/Users/prath/PycharmProjects/rp/Data/loss_list.csv', 'w')
+
 result = lcpfn.train_lcpfn(get_batch_func=get_batch_func,
-                         num_borders=100)
+                         num_borders=1000)
+
+
+# result = lcpfn.train_lcpfn(get_batch_func=get_batch_func,
+#                           seq_len=100,
+#                          emsize=256,
+#                          nlayers=3,
+#                          num_borders=100,
+#                          lr=0.001,
+#                          batch_size=10,
+#                          epochs=100)
 
 model = result[2]
 print(type(result))
-torch.save(model, "/mnt/c/Users/prath/PycharmProjects/rp/model_lcdb.pt")
+torch.save(model, "/mnt/c/Users/prath/PycharmProjects/rp/Data/model_lcdb_g2.pt")
 print(model)
 
 

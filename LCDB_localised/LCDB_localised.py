@@ -10,8 +10,6 @@ path = os.path.dirname(os.path.abspath(__file__))
 a = pd.read_pickle(path + '/all_curves.pkl')
 
 
-
-
 # create a dict of all pair of openmlid and learner
 openmlid_learner = {}
 
