@@ -4,6 +4,8 @@ import pandas as pd
 import os
 
 a = lcdb.get_all_curves()
+print(a.info())
+
 pd.to_pickle(a, '/mnt/c/Users/prath/PycharmProjects/rp/LCDB_localised/all_curves.pkl')
 # read from pickle
 path = os.path.dirname(os.path.abspath(__file__))
@@ -93,7 +95,7 @@ def get_all_curves():
         for learner in openmlid_learner[openmlid]:
             print(f"openmlid: {openmlid}, learner: {learner}")
             anchors, values_train, values_valid, values_test = get_curve_from_dataframe(get_curve_as_dataframe(openmlid, learner))
-            means = [np.mean(sublist) for sublist in values_test]
+            means = [np.mean(sublist) for sublist in values_valid]
             all_curves.append([openmlid, learner, anchors, means, np.std([max(sublist) - min(sublist) for sublist in values_valid])])
     all_curves = pd.DataFrame(all_curves, columns=['openmlid', 'learner', 'anchors', 'means', 'std'])
     return all_curves
